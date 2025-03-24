@@ -4,6 +4,7 @@ from app import app
 from services.market import MarketService
 from datetime import datetime, timedelta
 import sys
+from models.models import db, Seed, SeedPrice  # Add missing imports
 
 @click.group()
 def cli():

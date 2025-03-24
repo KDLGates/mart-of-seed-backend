@@ -3,6 +3,7 @@ from services.market import MarketService
 from datetime import datetime, timedelta
 from sqlalchemy import desc
 from flask_jwt_extended import jwt_required
+from models.models import db, Seed, SeedPrice  # Add missing imports
 
 api = Blueprint('api', __name__)
 

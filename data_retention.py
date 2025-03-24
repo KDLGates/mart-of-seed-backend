@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from sqlalchemy import text
-from models.models import SeedPrice
-from database import SessionLocal
+from models.models import SeedPrice, db  # Fix import to include db
+from database import get_session  # Import the correct session function
 import os
 import logging
 
@@ -21,7 +21,7 @@ def cleanup_old_seed_prices():
     retention_days = int(os.environ.get('DATA_RETENTION_DAYS', 365))
     cutoff_date = datetime.utcnow() - timedelta(days=retention_days)
     
-    db = SessionLocal()
+    session = get_session()  # Use get_session instead of SessionLocal
     try:
         # Use raw SQL for more efficient bulk deletion, especially important in production
         if os.environ.get('FLASK_ENV') == 'production':
@@ -36,9 +36,9 @@ def cleanup_old_seed_prices():
                     "(SELECT id FROM seed_prices WHERE recorded_at < :cutoff_date LIMIT :batch_size) "
                     "RETURNING id"
                 )
-                result = db.execute(stmt, {"cutoff_date": cutoff_date, "batch_size": batch_size})
+                result = session.execute(stmt, {"cutoff_date": cutoff_date, "batch_size": batch_size})
                 deleted_count = result.rowcount
-                db.commit()
+                session.commit()
                 
                 total_deleted += deleted_count
                 logger.info(f"Deleted batch of {deleted_count} records")
@@ -49,15 +49,15 @@ def cleanup_old_seed_prices():
             logger.info(f"Total deleted: {total_deleted} old seed price records")
         else:
             # Simpler approach for development
-            deleted = db.query(SeedPrice).filter(SeedPrice.recorded_at < cutoff_date).delete(synchronize_session=False)
-            db.commit()
+            deleted = session.query(SeedPrice).filter(SeedPrice.recorded_at < cutoff_date).delete(synchronize_session=False)
+            session.commit()
             logger.info(f"Deleted {deleted} old seed price records")
             
     except Exception as e:
-        db.rollback()
+        session.rollback()
         logger.error(f"Error during data cleanup: {str(e)}")
     finally:
-        db.close()
+        session.close()
 
 if __name__ == "__main__":
     logger.info("Running manual data retention cleanup")
