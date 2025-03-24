@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
 from config import Config
-from models.models import db
+from models.models import db, user
 from routes.api import api
 from routes.auth import auth
 from seed_db import seed_database

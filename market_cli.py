@@ -1,7 +1,6 @@
 import click
 from flask import current_app
 from app import app
-from models.models import db, Seed, SeedPrice
 from services.market import MarketService
 from datetime import datetime, timedelta
 import sys
