@@ -35,6 +35,15 @@ class User(db.Model):
             'last_login': self.last_login.isoformat() if self.last_login else None
         }
 
+class Category(db.Model):
+    __tablename__ = 'categories'
+
+    id = db.Column(db.Integer, primary_key=True, index=True)
+    name = db.Column(db.String, index=True)
+
+    # Use string reference instead of direct class reference
+    products = db.relationship("Product", back_populates="category")
+
 class Product(db.Model):
     __tablename__ = 'products'
 
@@ -44,15 +53,17 @@ class Product(db.Model):
     price = db.Column(db.Integer)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
 
+    # Use string reference instead of direct class reference
     category = db.relationship("Category", back_populates="products")
 
-class Category(db.Model):
-    __tablename__ = 'categories'
-
-    id = db.Column(db.Integer, primary_key=True, index=True)
-    name = db.Column(db.String, index=True)
-
-    products = db.relationship("Product", back_populates="category")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'price': self.price,
+            'category_id': self.category_id
+        }
 
 class Seed(db.Model):
     __tablename__ = "seeds"
