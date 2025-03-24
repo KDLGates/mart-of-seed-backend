@@ -4,7 +4,7 @@ from flask_jwt_extended import (
     create_access_token, create_refresh_token, 
     jwt_required, get_jwt_identity, get_jwt
 )
-from models.models import db, User  # Add missing imports
+from models.models.models import db, User  # Fix import path
 
 auth = Blueprint('auth', __name__)
 

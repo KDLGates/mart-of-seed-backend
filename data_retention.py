@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import text
-from models.models import SeedPrice, db  # Fix import to include db
+from models.models.models import SeedPrice, db  # Fix import path to use correct path
 from database import get_session  # Import the correct session function
 import os
 import logging
